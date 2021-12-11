@@ -4,10 +4,16 @@
 
 // TODO: REMOVE CREDENTIALS BEFORE GITHUB UPLOAD
 //create email service credentials
-String username = 'feelsafeapp@anathesis.eu';
+String username = 'safeinapp@anathesis.eu';
 String password = '!1DeuampeiwPote!2';
 String nameserver = 'linux123.papaki.gr';
-String domain = 'anathesis.eu';
+// String domain = 'anathesis.eu';
+
+// Activemms credentials
+final activemmsusr = "AnathesisCo";
+final activemmspw = "5106c392bb9aaa9cf670ebed76a71a45"; //Deuampeiw
+// usr:
+// pws: ANanathesis
 
 // Request to server to get validation
 // void serverDetails() async {
@@ -18,10 +24,10 @@ String domain = 'anathesis.eu';
 //   String mapLink =
 //       "https://www.google.com/maps/dir/?api=1&destination=${position.latitude},${position.longitude}";
 //
-// // TODO: ANATHESIS SERVER UPLOADS
+// // TO DO: ANATHESIS SERVER UPLOADS
 // prefs.setString("bookerPhone", '+306936769029');
 // prefs.setString('bookerEmail', 'info@anathesis.eu');
-// // TODO: LOCALHOST TESTING DETAILS
+// // TO DO: LOCALHOST TESTING DETAILS
 //   prefs.setString("bookerPhone", '+306987492041');
 //   prefs.setString("referenceCode", '');
 //   prefs.setString("bookerPosition", mapLink);

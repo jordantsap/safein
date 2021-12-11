@@ -4,6 +4,56 @@
 // import 'models/customer.dart';
 
 
+// sms permission function on main and verification_form screens initState
+//   void checkPermissions() async {
+//     // var smsStatus = await Permission.sms.status;
+//     // if (Platform.isAndroid) {
+//     Map<Permission, PermissionStatus> statuses = await [
+//       Permission.location,
+//       // Permission.sms,
+//       // Permission.phone,
+//     ].request();
+//
+//     if (await Permission.location.isRestricted || await Permission.location.isDenied || await Permission.location.isPermanentlyDenied) {
+//       // if (await Permission.sms.isRestricted || await Permission.sms.isDenied || await Permission.sms.isPermanentlyDenied) {
+//       //   if (await Permission.phone.isRestricted || await Permission.phone.isDenied || await Permission.phone.isPermanentlyDenied) {
+//         showDialog(
+//             context: context,
+//             barrierDismissible: false,
+//             builder: (_) => new AlertDialog(
+//               title: Text(AppLocalizations.of(context)
+//                   .translate('permissions_alert_title')),
+//               content: Text(AppLocalizations.of(context)
+//                   .translate('permissions_alert_content')),
+//               actions: <Widget>[
+//                 ElevatedButton(
+//                   child: Text(AppLocalizations.of(context)
+//                       .translate('permissions_settings_btn')),
+//                   onPressed: () {
+//                     AppSettings.openAppSettings();
+//                     Navigator.of(context).pop();
+//                   },
+//                 ),
+//                 ElevatedButton(
+//                   child: Text(
+//                       AppLocalizations.of(context).translate('close_btn')),
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                   },
+//                 )
+//               ],
+//             ));
+//         AppSettings.openAppSettings();
+//       //   }
+//       // }
+//     // }
+//
+//     print(statuses);
+//     } else {
+//       print("Apple mobile");
+//     }
+//   } // checkPermissions()
+
 // void createCustomer() async {
 //   print("createCustomer function is running");
 //   SharedPreferences prefs = await SharedPreferences.getInstance();

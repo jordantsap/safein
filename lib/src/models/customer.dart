@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final customer = customerFromJson(jsonString);
+
 import 'dart:convert';
 
 Customer customerFromJson(String str) => Customer.fromJson(json.decode(str));
@@ -7,31 +11,23 @@ String customerToJson(Customer data) => json.encode(data.toJson());
 class Customer {
   Customer({
     this.id,
-    this.firstname,
-    this.lastname,
-    this.companyId,
-    this.phone,
+    this.customer,
+    this.company,
   });
 
   String id;
-  String firstname;
-  String lastname;
-  int companyId;
-  String phone;
+  String customer;
+  String company;
 
   factory Customer.fromJson(Map<String, dynamic> json) => Customer(
-        id: json["id"],
-        firstname: json["firstname"],
-        lastname: json["lastname"],
-        companyId: json["company_id"],
-        phone: json["phone"],
-      );
+    id: json["id"],
+    customer: json["customer"],
+    company: json["company"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "firstname": firstname,
-        "lastname": lastname,
-        "company_id": companyId,
-        "phone": phone,
-      };
+    "id": id,
+    "customer": customer,
+    "company": company,
+  };
 }

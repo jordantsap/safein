@@ -55,9 +55,9 @@ android {
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        ndk {
-            debugSymbolLevel 'FULL'
-        }
+//        ndk {
+//            debugSymbolLevel 'FULL'
+//        }
     }
 
     signingConfigs {
@@ -84,4 +84,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-//android.defaultConfig.ndk.debugSymbolLevel = 'FULL'
+android.defaultConfig.ndk.debugSymbolLevel = 'FULL'

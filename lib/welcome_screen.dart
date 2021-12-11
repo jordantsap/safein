@@ -1,4 +1,5 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:safein/src/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'src/app_localizations.dart';
 import 'ask_help.dart';
@@ -12,6 +13,7 @@ class WelcomeScreen extends StatelessWidget {
       // remove the debug banner from top right of the screen
       debugShowCheckedModeBanner: false,
       color: Theme.of(context).primaryColor,
+      theme: ThemeData(fontFamily: 'SukhumvitSet'),
       // List all of the app's supported locales here
       supportedLocales: [
         Locale('en', 'US'),
@@ -41,83 +43,104 @@ class WelcomeScreen extends StatelessWidget {
         return supportedLocales.first;
       },
       home: new Scaffold(
+        backgroundColor: Color(0xFF15294e),
         appBar: new AppBar(
-          leading:  Text(""),
-          title:
-              new Text(AppLocalizations.of(context).translate('safein_title')),
+          backgroundColor: Color(0xFFced1D1),
+          leading: null,
+          title: new Text(
+            AppLocalizations.of(context).translate('safein_title'),
+            style: TextStyle(color: Color(0xFF15294e)),
+          ),
           // center the text horizontaly
           centerTitle: true,
+
         ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: new Column(
-              //color: Colors.amberAccent,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(width: 2.0, color: Colors.redAccent),
-                    ),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context).translate('usage_notice'),
-                    style: TextStyle(fontSize: 30.0, color: Colors.red),
-                  ),
+        body: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100.0),
+            color: Color(0xFFff6e41),
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 40,
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(
-                    AppLocalizations.of(context).translate('requires'),
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      // decoration: TextDecoration.underline,
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100.0),
+                  color: Color(0xFF15294e),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      onPressed: () async {
-                        // Validate returns true if the form is valid, or false
-                        // otherwise.
-                        // if (_formKey.currentState.validate()) {
-                        //   SharedPreferences prefs =
-                        //       await SharedPreferences.getInstance();
-                        //   prefs.setString('userPhone', userPhoneController.text);
-                        //   String userphone = prefs.getString('userPhone');
-                        //   // If the form is valid, display a Snackbar.
-                        //   Scaffold.of(context).showSnackBar(
-                        //       SnackBar(content: Text('Mobile number: $userphone')));
-                        //   clearText();
-                        //   // sleep(const Duration(seconds: 2));
-                        //   await Future.delayed(const Duration(seconds: 2));
-                        SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-                        String userPhone = prefs.getString('userPhone');
-                        if (userPhone != null) {
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new AskHelp()),
-                            // new AskHelp()),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new Verification()),
-                            // new AskHelp()),
-                          );
-                        }
-                        // }
-                      },
+                // padding: const EdgeInsets.all(6.5),
+                child: new Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
                       child: Text(
-                          AppLocalizations.of(context).translate('nextbtn'))),
+                        AppLocalizations.of(context).translate('usage_notice'),
+                        style: TextStyle(
+                          color:Colors.white,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        AppLocalizations.of(context).translate('requires'),
+                        style: TextStyle(
+                          color:Colors.white,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            // Validate returns true if the form is valid, or false
+                            // otherwise.
+                            // if (_formKey.currentState.validate()) {
+                            //   SharedPreferences prefs =
+                            //       await SharedPreferences.getInstance();
+                            //   prefs.setString('userPhone', userPhoneController.text);
+                            //   String userphone = prefs.getString('userPhone');
+                            //   // If the form is valid, display a Snackbar.
+                            //   Scaffold.of(context).showSnackBar(
+                            //       SnackBar(content: Text('Mobile number: $userphone')));
+                            //   clearText();
+                            //   // sleep(const Duration(seconds: 2));
+                            //   await Future.delayed(const Duration(seconds: 2));
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            String userPhone = prefs.getString('userPhone');
+                            if (userPhone != null) {
+                              Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new AskHelp()),
+                                // new AskHelp()),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new Verification()),
+                                // new AskHelp()),
+                              );
+                            }
+                            // }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(0xFFff6e41)),
+                          child: Text(
+                              AppLocalizations.of(context).translate('nextbtn'))),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

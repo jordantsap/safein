@@ -1,18 +1,15 @@
 // import 'dart:io' show Platform;
 // import 'package:url_launcher/url_launcher.dart';
+// import 'package:flutter/material.dart';
+// import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 import 'settings.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:url_launcher/url_launcher.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
-void newCustomer() async {
 
-  // var endpoint = 'https://appserver.anathesis.eu/api/history/store/';
-  // var response = await http.post(endpoint, body: {'name': 'doodle', 'company_id': 'blue'});
-  // print('Response status: ${response.statusCode}');
-  // print('Response body: ${response.body}');
+Future newCustomer() async {
 
 // create the connection to the mail server
   final smtpServer =
@@ -28,15 +25,16 @@ void newCustomer() async {
   String bookerPhone = prefs.getString('bookerPhone');
   String userPhone = prefs.getString('userPhone');
   String countryCode = prefs.getString('countryCode');
-  // print("shared preferences User phone: $countryCode + $userPhone");
+  print("shared preferences User phone: $countryCode$userPhone");
   print("shared preferences Booker email: $bookerEmail");
+  print("shared preferences Booker Phone: $countryCode$bookerPhone");
 
   // Create our message.
   print("New user send email Start");
   final message = Message()
     ..from = Address(username)
     ..recipients.add(bookerEmail)
-    ..subject = 'New user from feelsafe application!'
+    ..subject = 'New user from SafeIn application!'
     ..html = "Message sent at: ${DateTime.now()} <br>"
         "From number: $countryCode$userPhone<br>"
         "Mobile location: <a href='$mapLink'/> Go to User Location</a>";
@@ -50,59 +48,39 @@ void newCustomer() async {
       print('Problem: ${p.code}: ${p.msg}');
     }
   }
-
+  print("New user send email end");
 
   print("New user send sms Start");
+  final recipients = "$countryCode$bookerPhone";
+  final sender = "$countryCode$userPhone";
 
-  // TwilioFlutter twilioFlutter main setup;
-  TwilioFlutter twilioFlutter;
-  twilioFlutter = TwilioFlutter(
-      accountSid : 'ACffef97b6f114ed632654352a3989150b', // my credentials *** with Account SID
-      authToken : 'ad8a106b24d6f14281aabc57f2f19fdc',  // replace xxx with Auth Token
-      twilioNumber : '+17742177524'  // replace .... with Twilio Number
-  );
-  twilioFlutter.sendSMS(
-      toNumber : countryCode+bookerPhone,
-      messageBody : "New user from feelsafe application\n"
-          "Date and time at ${DateTime.now()}\n"
-          "Location:\n"
-          "$mapLink");
-  print("Use twilioFlutter.sendSMS with the recipient number and message body.");
+  final fullmessage = "New user ($sender) from SafeIn application\n"
+      "Date and time at ${DateTime.now()}\n"
+      "Location:\n"
+      "$mapLink";
+  // print("fullmessage is $fullmessage");
 
-  // if(Platform.isAndroid){
-  //
-  //   print("Platform is android");
-  //   void _sendSMS(String message, String number) async {
-  //     String _result = await sendSMS(message: message, recipients: [number])
-  //         .catchError((onError) {
-  //       print(onError);
-  //     });
-  //     print(_result);
-  //   }
-  //   String message = "New user from feelsafe application\n"
-  //       "Date and time at ${DateTime.now()}\n"
-  //       "Location:\n"
-  //       "$mapLink";
-  //
-  //   _sendSMS(message, bookerPhone);
-  //
-  // //  next commented are for ios development
-  // // } else if (Platform.isIOS) {
-  // //   print("Platform is IOS");
-  // //   void _sendSMS(String message, String number) async {
-  // //     String _result = await sendSMS(message: message, recipients: [number])
-  // //         .catchError((onError) {
-  // //       print(onError);
-  // //     });
-  // //     print(_result);
-  // //   }
-  // //   String message = "New user from feelsafe application\n"
-  // //       "Date and time at ${DateTime.now()}\n"
-  // //       "Location:\n"
-  // //       "$mapLink";
-  // //
-  // //   _sendSMS(message, bookerPhone);
-  // }
+  final response = await http.get(Uri.parse(
+      "https://www.activemms.com/extapi.asp?username=$activemmsusr"
+      "&password=$activemmspw"
+      "&recepients=$recipients"
+      "&sender=$userPhone"
+      "&message=$fullmessage&smstype=0&sendbackstatus=true"));
 
-  print("New user send sms end");
+  // print(response.body);
+  if (response.statusCode == 200 && response.body.isNotEmpty) {
+    print("++++++++++++++++++++++++++\n"
+        "response.statusCode == 200\n"
+        "+++++++++++++++++++++++++++");
+    // try{
+    var data = response.body;
+    print(data); //[code]
+    //  } on FormatException catch (e){
+    // print(e);
+    //  }
+
+    print("Use activemms.sendSMS with the recipient number $recipients and message body: $fullmessage.");
+
+    print("New user send sms end");
+  }
 }
