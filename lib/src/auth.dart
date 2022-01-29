@@ -23,10 +23,12 @@ Future newCustomer() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String bookerEmail = prefs.getString('bookerEmail');
   String bookerPhone = prefs.getString('bookerPhone');
+  String bookerName = prefs.getString('bookerName');
   String userPhone = prefs.getString('userPhone');
   String countryCode = prefs.getString('countryCode');
   print("shared preferences User phone: $countryCode$userPhone");
   print("shared preferences Booker email: $bookerEmail");
+  print("shared preferences Booker Name: $bookerName");
   print("shared preferences Booker Phone: $countryCode$bookerPhone");
 
   // Create our message.
@@ -51,6 +53,7 @@ Future newCustomer() async {
   print("New user send email end");
 
   print("New user send sms Start");
+  //
   final recipients = "$countryCode$bookerPhone";
   final sender = "$countryCode$userPhone";
 
@@ -81,6 +84,7 @@ Future newCustomer() async {
 
     print("Use activemms.sendSMS with the recipient number $recipients and message body: $fullmessage.");
 
-    print("New user send sms end");
   }
+  //
+    print("New user send sms end");
 }

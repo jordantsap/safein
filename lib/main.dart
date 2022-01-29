@@ -3,18 +3,17 @@ import 'dart:convert';
 import 'package:after_layout/after_layout.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' show Geolocator, LocationAccuracy, Position;
 // import 'package:google_fonts/google_fonts.dart';
-// import 'package:permission_handler/permission_handler.dart';
 import 'src/auth.dart';
-import 'src/settings.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'ask_help.dart';
 import 'src/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker/country_code_picker.dart' show CountryCode, CountryCodePicker;
 
 void main() {
   runApp(SafeInApp());
@@ -76,10 +75,6 @@ class _VerificationState extends State<Verification>
   void initState() {
     super.initState();
     checkLocation();
-    // checkPermissions();
-    // sendData();
-    // listenConnectivity();
-    // serverDetails();
     codeField = FocusNode();
     phoneField = FocusNode();
   }
@@ -87,11 +82,6 @@ class _VerificationState extends State<Verification>
   //  connectivity check
   void askConnectivity() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    // if (connectivityResult == ConnectivityResult.mobile) {
-    //   print("Internet method = Mobile data from Verification screen");
-    // } else if (connectivityResult == ConnectivityResult.wifi) {
-    //   print("Internet method = Wifi from Verification screen");
-    // } else
     if (connectivityResult == ConnectivityResult.none) {
       print("Internet method = None from Verification screen");
       showDialog(
@@ -159,55 +149,6 @@ class _VerificationState extends State<Verification>
         desiredAccuracy: LocationAccuracy.bestForNavigation);
   }
 
-// sms permission function on main and verification_form screens initState
-//   void checkPermissions() async {
-//     if (Platform.isAndroid) {
-//     Map<Permission, PermissionStatus> statuses = await [
-//       Permission.location,
-//       // Permission.sms,
-//       // Permission.phone,
-//     ].request();
-//
-//     if (! await Permission.location.request().isGranted ) {
-//       if (! await Permission.sms.request().isGranted ) {
-//         if (await Permission.phone.isRestricted || await Permission.phone.isDenied || await Permission.phone.isPermanentlyDenied) {
-//         showDialog(
-//             context: context,
-//             barrierDismissible: false,
-//             builder: (_) => new AlertDialog(
-//               title: Text(AppLocalizations.of(context)
-//                   .translate('permissions_alert_title')),
-//               content: Text(AppLocalizations.of(context)
-//                   .translate('permissions_alert_content')),
-//               actions: <Widget>[
-//                 ElevatedButton(
-//                   child: Text(AppLocalizations.of(context)
-//                       .translate('permissions_settings_btn')),
-//                   onPressed: () {
-//                     AppSettings.openAppSettings();
-//                     Navigator.of(context).pop();
-//                   },
-//                 ),
-//                 ElevatedButton(
-//                   child: Text(
-//                       AppLocalizations.of(context).translate('already_did_btn')),
-//                   onPressed: () {
-//                     Navigator.of(context).pop();
-//                   },
-//                 )
-//               ],
-//             ));
-//         AppSettings.openAppSettings();
-//          } //3rd if close
-//        }
-//     }
-//
-//     print(statuses);
-//     // } else {
-//     //   print("Apple mobile");
-//      }
-//   } // checkPermissions()
-
 
   FocusNode codeField;
   FocusNode phoneField;
@@ -254,13 +195,13 @@ class _VerificationState extends State<Verification>
         ),
         // center the text horizontaly
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100.0),
-          color: Color(0xFFff6e41),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100.0),
+            color: Color(0xFFff6e41),
+          ),
+          child: Center(
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100.0),
@@ -343,17 +284,21 @@ class _VerificationState extends State<Verification>
                               ),
                               child: Row(
                                 children: [
-                                  CountryCodePicker(
-                                    onChanged: _onCountryChange,
-                                    initialSelection: 'GR',
-                                    onInit: _onCountryChange,
-                                    favorite: ['RU', 'BG', 'AL', 'RO'],
+                                  Semantics(
+                              label: AppLocalizations.of(context).translate('ask_help_title'),
+                                    child: CountryCodePicker(
+                                      onChanged: _onCountryChange,
+                                      initialSelection: 'GR',
+                                      onInit: _onCountryChange,
+                                      favorite: ['RU', 'BG', 'AL', 'RO'],
+                                    ),
                                   ),
                                   Flexible(
                                     child: TextFormField(
                                       focusNode: phoneField,
                                       controller: userPhoneController,
                                       textInputAction: TextInputAction.done,
+
                                       onFieldSubmitted: (_) =>
                                           FocusScope.of(context).requestFocus(),
                                       // onFieldSubmitted: (term){
@@ -366,21 +311,11 @@ class _VerificationState extends State<Verification>
                                           return AppLocalizations.of(context)
                                               .translate('notempty_val');
                                         }
-                                        // if (value.length < 10) {
-                                        //
-                                        //   return AppLocalizations.of(context)
-                                        //       .translate('digit_val');
-                                        // }
                                         if (value.length != 10) {
                                           int len =  value.length;
                                           return AppLocalizations.of(context)
                                                 .translate('digit_val')+ "$len";
                                         }
-                                        // if (!RegExp(r'(^(?:[+0]9)?[0-9]{10}$)')
-                                        //     .hasMatch(value)) {
-                                        //   return AppLocalizations.of(context)
-                                        //       .translate('phone_val');
-                                        // }
                                         return null;
                                       },
                                       decoration: InputDecoration(
@@ -393,6 +328,9 @@ class _VerificationState extends State<Verification>
                                         hintStyle: TextStyle(color: Colors.black),
                                       ),
                                       keyboardType: TextInputType.number,
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ], // Only numbers can be entered
                                       // onSaved method is called when formKey.currentState.save
                                       // is called during form submission
                                       onSaved: (String value) {
@@ -461,7 +399,7 @@ class _VerificationState extends State<Verification>
                                             } else {
                                               // Validate returns true if the form is valid, otherwise false.
                                               if (_formKey.currentState.validate()) {
-
+                                                // askConnectivity();
                                                 // checkPermissions();
                                                 setState(() => isPressed = false);
                                                 ScaffoldMessenger.of(context)
@@ -478,7 +416,7 @@ class _VerificationState extends State<Verification>
                                                             style: TextStyle(
                                                               fontSize: 20.0,
                                                             ))));
-                                                askConnectivity();
+
 
                                                 // now save the state of the form using the form key
                                                 // .save() uses the onSaved: method that we used earlier
@@ -541,6 +479,7 @@ class _VerificationState extends State<Verification>
                                                   // print("Laravel data :----------------------"); //[data]
                                                   // print(data); //[code]
                                                   final bookerCode = data['id'];
+                                                  final bookerName = data['name'];
                                                   final bookerEmail = data['email'];
                                                   // print(bookerEmail);
                                                   final bookerPhone = data['phone'];
@@ -556,6 +495,8 @@ class _VerificationState extends State<Verification>
                                                   prefs.setInt(
                                                       'bookerCode', bookerCode);
                                                   prefs.setString(
+                                                      'bookerName', bookerName);
+                                                  prefs.setString(
                                                       'bookerEmail', bookerEmail);
                                                   prefs.setString(
                                                       'bookerPhone', bookerPhone);
@@ -566,12 +507,12 @@ class _VerificationState extends State<Verification>
                                                   prefs.setString(
                                                       'bookerLng', bookerLng);
 
-                                                  // print(
-                                                  //     "bookerCode received by API: $bookerCode");
+                                                  print(
+                                                      "bookerName received by API: $bookerName");
                                                   // print(prefs.getInt('bookerCode'));
 
                                                   newCustomer();
-                                                  // createCustomer();
+
                                                   clearText();
 
                                                   Navigator.push(

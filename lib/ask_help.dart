@@ -7,7 +7,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'src/app_localizations.dart';
 import 'src/ask.dart';
-import 'src/settings.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
@@ -20,12 +19,20 @@ class AskHelp extends StatefulWidget {
 }
 
 class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
+  //
+  // hotelierName() async{
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //
+  //   String bookerName = prefs.getString('bookerName');
+  //   return bookerName;
+  // }
+
+
   @override
   void initState() {
     super.initState();
     // checkPermissions();
     checkLocation();
-    // serverDetails();
     // listenConnectivity();
     // getDirections();
   }
@@ -138,6 +145,7 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       // remove the debug banner from top right of the screen
       debugShowCheckedModeBanner: false,
@@ -497,3 +505,4 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
     }
   }
 }
+

@@ -1,5 +1,4 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:safein/src/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'src/app_localizations.dart';
 import 'ask_help.dart';
