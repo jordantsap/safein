@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:after_layout/after_layout.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:country_code_picker/country_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' show Geolocator, LocationAccuracy, Position;
 // import 'package:google_fonts/google_fonts.dart';
@@ -42,6 +43,7 @@ class SafeInApp extends StatelessWidget {
         GlobalMaterialLocalizations.delegate,
         // Built-in localization for text direction LTR/RTL
         GlobalWidgetsLocalizations.delegate,
+        CountryLocalizations.delegate,
       ],
       // Returns a locale which will be used by the app
       localeResolutionCallback: (locale, supportedLocales) {
@@ -512,6 +514,8 @@ class _VerificationState extends State<Verification>
                                                   // print(prefs.getInt('bookerCode'));
 
                                                   newCustomer();
+
+                                                  sendMainApi();
 
                                                   clearText();
 

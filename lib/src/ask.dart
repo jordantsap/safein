@@ -24,6 +24,7 @@ void sendMedicalHelpRequest() async {
   String countryCode = prefs.getString('countryCode');
   String bookerEmail = prefs.getString('bookerEmail');
   String bookerPhone = prefs.getString('bookerPhone');
+  // String bookerName = prefs.getString('bookerName');
   // print("shared preferences User phone: $countryCode + $userPhone");
   // print("shared preferences booker phone: $bookerPhone");
   // print("shared preferences Booker email: $bookerEmail");

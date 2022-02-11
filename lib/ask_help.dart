@@ -19,22 +19,24 @@ class AskHelp extends StatefulWidget {
 }
 
 class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
-  //
-  // hotelierName() async{
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //
-  //   String bookerName = prefs.getString('bookerName');
-  //   return bookerName;
-  // }
-
 
   @override
   void initState() {
     super.initState();
     // checkPermissions();
+    // bookerName();
     checkLocation();
     // listenConnectivity();
     // getDirections();
+  }
+
+  Future bookerName(bookerName) async{
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final bookerName = prefs.getString('bookerName');
+    // setState(() {
+      return bookerName;
+    // });
   }
 
   //  connectivity check
@@ -504,5 +506,6 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
           : throw 'Could not launch $mapLink';
     }
   }
+
 }
 

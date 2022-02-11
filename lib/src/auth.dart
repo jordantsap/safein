@@ -1,13 +1,45 @@
-// import 'dart:io' show Platform;
-// import 'package:url_launcher/url_launcher.dart';
-// import 'package:flutter/material.dart';
-// import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:safein/src/models/customer.dart';
 import 'settings.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+Future sendMainApi() async {
+  // Http package
+  Future<Customer> sendMainApi(String title) async {
+    final response = await http.post(
+      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'title': title,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return Customer.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to create album.');
+    }
+  }
+
+  // SharedPreferences package
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String bookerCode = prefs.getString('bookerCode');
+  String userPhone = prefs.getString('userPhone');
+  String countryCode = prefs.getString('countryCode');
+  print("shared preferences User phone: $countryCode$userPhone");
+  print("shared preferences Booker Code: $bookerCode");
+}
+
 
 Future newCustomer() async {
 
