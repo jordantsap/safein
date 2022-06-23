@@ -15,14 +15,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.0.1+345678123 # console build id = 1234 (0.0.2) open testing
+version: 0.0.1+1234556789
 
-#new design
-# add buildgrandle debug symbols
-#rebuild and wait confirm
-# returned to retry stable to master
-# try to add localization to country code picker
-# Just added the CountryLocalizations.delegate in the list of your app delegates
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
@@ -37,17 +31,14 @@ dependencies:
   cupertino_icons: ^1.0.0
 
   mailer: ^5.1.0
-#  shared_preferences: ^0.5.12+4
-  shared_preferences: ^2.0.5
-  app_settings: ^4.0.4
-  geolocator: ^8.1.1
-#  connectivity: ^2.0.2
-  connectivity: ^3.0.3
-  after_layout: ^1.0.7+2
+  shared_preferences: ^2.0.13
+  app_settings: ^4.1.1
+  geolocator: ^8.2.0
+  after_layout: ^1.1.0
   http: ^0.13.4
   country_code_picker: ^2.0.2
-#  url_launcher: ^5.4.2
-  url_launcher: ^6.0.3
+  url_launcher: ^6.0.20
+  connectivity_plus: ^2.2.1
 #  google_fonts: ^2.1.0
 
 #  pull_to_refresh: ^1.6.4

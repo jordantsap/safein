@@ -48,6 +48,11 @@
         <string>tel</string>
         <string>mailto</string>
     </array>
+    <key>CFBundleLocalizations</key>
+    <array>
+    	<string>en</string>
+    	<string>el</string>
+    </array>
 	<false/>
 </dict>
 </plist>
