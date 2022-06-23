@@ -9,7 +9,7 @@ import 'src/app_localizations.dart';
 import 'src/ask.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:app_settings/app_settings.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'welcome_screen.dart';
 import 'main.dart';
 
@@ -19,16 +19,6 @@ class AskHelp extends StatefulWidget {
 }
 
 class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
-
-  @override
-  void initState() {
-    super.initState();
-    // checkPermissions();
-    // bookerName();
-    checkLocation();
-    // listenConnectivity();
-    // getDirections();
-  }
 
   Future bookerName(bookerName) async{
 
@@ -42,33 +32,48 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
   //  connectivity check
   void askConnectivity() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    // if (connectivityResult == ConnectivityResult.mobile) {
-    //   print("Internet method = Mobile data from ask help screen");
-    // } else if (connectivityResult == ConnectivityResult.wifi) {
-    //   print("Internet method = Wifi from ask help screen");
-    // } else
+    if (connectivityResult == ConnectivityResult.mobile) {
+      print("Internet method = Mobile data from ask help screen");
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      print("Internet method = Wifi from ask help screen");
+    } else
     if (connectivityResult == ConnectivityResult.none) {
       print("Internet method = None from ask help screen");
       showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) => new AlertDialog(
-                title: Text(AppLocalizations.of(context)
-                    .translate('internet_alert_title')),
-                content: Text(AppLocalizations.of(context)
-                    .translate('internet_alert_content')),
+                title: Semantics(
+                  label: AppLocalizations.of(context)
+                      .translate('internet_alert_title'),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('internet_alert_title')),
+                ),
+                content: Semantics(
+                  label: AppLocalizations.of(context)
+                      .translate('internet_alert_content'),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('internet_alert_content')),
+                ),
                 actions: <Widget>[
                   ElevatedButton(
-                    child: Text(AppLocalizations.of(context)
-                        .translate('wifisettings_btn')),
+                    child: Semantics(
+                      label: AppLocalizations.of(context)
+                          .translate('wifisettings_btn'),
+                      child: Text(AppLocalizations.of(context)
+                          .translate('wifisettings_btn')),
+                    ),
                     onPressed: () {
                       AppSettings.openWIFISettings();
                       Navigator.of(context).pop();
                     },
                   ),
                   ElevatedButton(
-                    child: Text(AppLocalizations.of(context)
-                        .translate('already_did_btn')),
+                    child: Semantics(
+                      label: AppLocalizations.of(context).translate('already_did_btn'),
+                      child: Text(AppLocalizations.of(context)
+                          .translate('already_did_btn')),
+                    ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -86,7 +91,7 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
 
   Future<Position> checkLocation() async {
     bool serviceEnabled;
-    // LocationPermission permission;
+    LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -94,14 +99,26 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
           context: context,
           barrierDismissible: false,
           builder: (_) => new AlertDialog(
-                title: Text(AppLocalizations.of(context)
-                    .translate('location_alert_title')),
-                content: Text(AppLocalizations.of(context)
-                    .translate('location_alert_content')),
+                title: Semantics(
+                  label: AppLocalizations.of(context)
+                      .translate('location_alert_title'),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('location_alert_title')),
+                ),
+                content: Semantics(
+                  label: AppLocalizations.of(context)
+                      .translate('location_alert_content'),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('location_alert_content')),
+                ),
                 actions: <Widget>[
                   ElevatedButton(
-                    child: Text(AppLocalizations.of(context)
-                        .translate('location_settings_btn')),
+                    child: Semantics(
+                      label: AppLocalizations.of(context)
+              .translate('location_settings_ btn'),
+                      child: Text(AppLocalizations.of(context)
+                          .translate('location_settings_btn')),
+                    ),
                     onPressed: () {
                       AppSettings.openLocationSettings();
                       Navigator.of(context).pop();
@@ -111,9 +128,34 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
               ));
       return Future.error('Location services are disabled.');
     }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
 
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation);
+        desiredAccuracy: LocationAccuracy.high);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkLocation();
+    askConnectivity();
   }
 
   // Be sure to cancel subscription after you are done
@@ -148,11 +190,14 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
   @override
   Widget build(BuildContext context) {
 
-    return MaterialApp(
-      // remove the debug banner from top right of the screen
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'SukhumvitSet'),
-      color: Theme.of(context).primaryColor,
+    return Semantics(
+      label: AppLocalizations.of(context).translate('safein_empty_space'),
+      child: MaterialApp(
+        // remove the debug banner from top right of the screen
+        debugShowCheckedModeBanner: false,
+        // showSemanticsDebugger: true,
+        theme: ThemeData(fontFamily: 'SukhumvitSet'),
+        color: Theme.of(context).primaryColor,
 
       // List all of the app's supported locales here
       supportedLocales: [
@@ -247,203 +292,80 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
                                   setState(() => isPressed = true);
                                   // print("Button pressed");
 
-                                  var connectivityResult = await (Connectivity()
-                                      .checkConnectivity());
-                                  if (connectivityResult ==
-                                      ConnectivityResult.none) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            backgroundColor:
-                                                Theme.of(context).primaryColor,
-                                            duration: Duration(seconds: 5),
-                                            content: Text(
-                                                AppLocalizations.of(context)
-                                                    .translate('no_internet'),
-                                                style: TextStyle(
-                                                  fontSize: 20.0,
-                                                ))));
-                                  } else {
-                                    sendMedicalHelpRequest();
-                                    showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (_) => new AlertDialog(
-                                              title: Text(AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'messagesent_confirmation_title')),
-                                              content: Text(AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'messagesent_confirmation_content')),
-                                              actions: <Widget>[
-                                                ElevatedButton(
-                                                  child: Text(AppLocalizations
-                                                          .of(context)
-                                                      .translate('close_btn')),
-                                                  onPressed: () {
-                                                    Navigator.of(context,
-                                                            rootNavigator: true)
-                                                        .pop();
-                                                  },
-                                                )
-                                              ],
-                                            ));
-                                  }
-                                  setState(() => isPressed = false);
-                                },
-                          onLongPress:
-                              null, // Set one as NOT null is enough to enable the button
-                        ),
-                        Text(
-                          AppLocalizations.of(context)
-                              .translate('car_help_title'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              primary: Color(0xFFff6e41)),
-                          icon: Icon(Icons.car_repair),
-                          label: Text(AppLocalizations.of(context)
-                              .translate('car_help_btn')),
-                          onPressed: isPressed
-                              ? null
-                              : () async {
-                                  setState(() => isPressed = true);
-                                  print("Button pressed");
-
-                                  var connectivityResult = await (Connectivity()
-                                      .checkConnectivity());
-                                  if (connectivityResult ==
-                                      ConnectivityResult.none) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            backgroundColor:
-                                                Theme.of(context).primaryColor,
-                                            duration: Duration(seconds: 5),
-                                            content: Text(
-                                                AppLocalizations.of(context)
-                                                    .translate('no_internet'),
-                                                style: TextStyle(
-                                                  fontSize: 20.0,
-                                                ))));
-                                  } else {
-                                    sendCarRelatedHelpRequest();
-                                    showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (_) => new AlertDialog(
-                                              title: Text(AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'messagesent_confirmation_title')),
-                                              content: Text(AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'messagesent_confirmation_content')),
-                                              actions: <Widget>[
-                                                ElevatedButton(
-                                                  child: Text(AppLocalizations
-                                                          .of(context)
-                                                      .translate('close_btn')),
-                                                  onPressed: () {
-                                                    Navigator.of(context,
-                                                            rootNavigator: true)
-                                                        .pop();
-                                                  },
-                                                )
-                                              ],
-                                            ));
-                                  }
-                                  setState(() => isPressed = false);
-                                },
-                          onLongPress: null,
-                        ),
-                        Text(
-                          AppLocalizations.of(context)
-                              .translate('lost_help_title'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              primary: Color(0xFFff6e41)),
-                          icon: Icon(Icons.add_location),
-                          label: Text(AppLocalizations.of(context)
-                              .translate('lost_help_btn')),
-                          onPressed: isPressed
-                              ? null
-                              : () async {
-                                  setState(() => isPressed = true);
-                                  print("Button pressed");
-
-                                  var connectivityResult = await (Connectivity()
-                                      .checkConnectivity());
-                                  if (connectivityResult ==
-                                      ConnectivityResult.none) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            backgroundColor:
-                                                Theme.of(context).primaryColor,
-                                            duration: Duration(seconds: 5),
-                                            content: Text(
-                                                AppLocalizations.of(context)
-                                                    .translate('no_internet'),
-                                                style: TextStyle(
-                                                  fontSize: 20.0,
-                                                ))));
-                                  } else {
-                                    sendLostRequest();
-                                    showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (_) => new AlertDialog(
-                                              title: Text(AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'messagesent_confirmation_title')),
-                                              content: Text(AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'messagesent_confirmation_content')),
-                                              actions: <Widget>[
-                                                ElevatedButton(
-                                                  child: Text(AppLocalizations
-                                                          .of(context)
-                                                      .translate('close_btn')),
-                                                  onPressed: () {
-                                                    Navigator.of(context,
-                                                            rootNavigator: true)
-                                                        .pop();
-                                                  },
-                                                )
-                                              ],
-                                            ));
-                                  }
-                                  setState(() => isPressed = false);
-                                },
-                          onLongPress: null,
-                        ),
-                        Divider(
-                          thickness: 5.0,
-                          color: Colors.blueGrey,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Text(
+                                        var connectivityResult = await (Connectivity()
+                                            .checkConnectivity());
+                                        if (connectivityResult ==
+                                            ConnectivityResult.none) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                  backgroundColor:
+                                                      Theme.of(context).primaryColor,
+                                                  duration: Duration(seconds: 5),
+                                                  content: Semantics(
+                                                    label: AppLocalizations.of(context)
+                                                        .translate('no_internet'),
+                                                    child: Text(
+                                                        AppLocalizations.of(context)
+                                                            .translate('no_internet'),
+                                                        style: TextStyle(
+                                                          fontSize: 20.0,
+                                                        )),
+                                                  )));
+                                        } else {
+                                          sendMedicalHelpRequest();
+                                          showDialog(
+                                            useSafeArea: true,
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (_) => new AlertDialog(
+                                                semanticLabel: AppLocalizations.of(
+                                                    context)
+                                                    .translate(
+                                                    'messagesent_confirmation_title'),
+                                                    title: Text(AppLocalizations.of(
+                                                            context)
+                                                        .translate(
+                                                            'messagesent_confirmation_title')),
+                                                    content: Semantics(
+                                                      label: AppLocalizations.of(
+                                                          context)
+                                                          .translate(
+                                                          'messagesent_confirmation_content'),
+                                                      child: Text(AppLocalizations.of(
+                                                              context)
+                                                          .translate(
+                                                              'messagesent_confirmation_content')),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      Semantics(
+                                                        label: AppLocalizations
+                                                  .of(context)
+                                                  .translate('close_btn'),
+                                                        child: ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context,
+                                                                    rootNavigator: true)
+                                                                .pop();
+                                                          },
+                                                          child: Text(AppLocalizations
+                                                                  .of(context)
+                                                              .translate('close_btn')),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ));
+                                        }
+                                        setState(() => isPressed = false);
+                                      },
+                                onLongPress:
+                                    null, // Set one as NOT null is enough to enable the button
+                              ),
+                            Semantics(
+                              label: AppLocalizations.of(context)
+                                  .translate('car_help_title'),
+                              child: Text(
                                 AppLocalizations.of(context)
-                                    .translate('location_here'),
+                                    .translate('car_help_title'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
@@ -451,34 +373,238 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              ElevatedButton.icon(
+                            ),
+                            Semantics(
+                              label: AppLocalizations.of(context)
+                                  .translate('car_help_btn'),
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Color(0xFFff6e41)),
+                                icon: Icon(Icons.car_repair),
+                                label: Semantics(
+                                  label: AppLocalizations.of(context)
+                                      .translate('car_help_btn'),
+                                  child: Text(AppLocalizations.of(context)
+                                      .translate('car_help_btn')),
+                                ),
+                                onPressed: isPressed
+                                    ? null
+                                    : () async {
+                                        setState(() => isPressed = true);
+                                        print("Button pressed");
+
+                                        var connectivityResult = await (Connectivity()
+                                            .checkConnectivity());
+                                        if (connectivityResult ==
+                                            ConnectivityResult.none) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                  backgroundColor:
+                                                      Theme.of(context).primaryColor,
+                                                  duration: Duration(seconds: 5),
+                                                  content: Semantics(
+                                                    label: AppLocalizations.of(context)
+                                                        .translate('no_internet'),
+                                                    child: Text(
+                                                        AppLocalizations.of(context)
+                                                            .translate('no_internet'),
+                                                        style: TextStyle(
+                                                          fontSize: 20.0,
+                                                        )),
+                                                  )));
+                                        } else {
+                                          sendCarRelatedHelpRequest();
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (_) => new AlertDialog(
+                                                    title: Semantics(
+                                                      label: AppLocalizations.of(
+                                                          context)
+                                                          .translate(
+                                                          'messagesent_confirmation_title'),
+                                                      child: Text(AppLocalizations.of(
+                                                              context)
+                                                          .translate(
+                                                              'messagesent_confirmation_title')),
+                                                    ),
+                                                    content: Semantics(
+                                                      label: AppLocalizations.of(
+                                                          context)
+                                                          .translate(
+                                                          'messagesent_confirmation_content'),
+                                                      child: Text(AppLocalizations.of(
+                                                              context)
+                                                          .translate(
+                                                              'messagesent_confirmation_content')),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      ElevatedButton(
+                                                        child: Semantics(
+                                                          label: AppLocalizations
+                                                  .of(context)
+                                                  .translate('close_btn'),
+                                                          child: Text(AppLocalizations
+                                                                  .of(context)
+                                                              .translate('close_btn')),
+                                                        ),
+                                                        onPressed: () {
+                                                          Navigator.of(context,
+                                                                  rootNavigator: true)
+                                                              .pop();
+                                                        },
+                                                      )
+                                                    ],
+                                                  ));
+                                        }
+                                        setState(() => isPressed = false);
+                                      },
+                                onLongPress: null,
+                              ),
+                            ),
+                            Semantics(
+                              label: AppLocalizations.of(context)
+                                  .translate('lost_help_title'),
+                              child: Text(
+                                AppLocalizations.of(context)
+                                    .translate('lost_help_title'),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Semantics(
+                              label: AppLocalizations.of(context)
+                                  .translate('lost_help_btn'),
+                              child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                     primary: Color(0xFFff6e41)),
                                 icon: Icon(Icons.add_location),
                                 label: Text(AppLocalizations.of(context)
-                                    .translate('open_map')),
-                                onPressed: _launchURL,
+                                    .translate('lost_help_btn')),
+                                onPressed: isPressed
+                                    ? null
+                                    : () async {
+                                        setState(() => isPressed = true);
+                                        print("Button pressed");
+
+                                        var connectivityResult = await (Connectivity()
+                                            .checkConnectivity());
+                                        if (connectivityResult ==
+                                            ConnectivityResult.none) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                  backgroundColor:
+                                                      Theme.of(context).primaryColor,
+                                                  duration: Duration(seconds: 5),
+                                                  content: Semantics(
+                                                    label: AppLocalizations.of(context)
+                                                        .translate('no_internet'),
+                                                    child: Text(
+                                                        AppLocalizations.of(context)
+                                                            .translate('no_internet'),
+                                                        style: TextStyle(
+                                                          fontSize: 20.0,
+                                                        )),
+                                                  )));
+                                        } else {
+                                          sendLostRequest();
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (_) => new AlertDialog(
+                                                    title: Semantics(
+                                                      label: AppLocalizations.of(
+                                                          context)
+                                                          .translate(
+                                                          'messagesent_confirmation_title'),
+                                                      child: Text(AppLocalizations.of(
+                                                              context)
+                                                          .translate(
+                                                              'messagesent_confirmation_title')),
+                                                    ),
+                                                    content: Text(AppLocalizations.of(
+                                                            context)
+                                                        .translate(
+                                                            'messagesent_confirmation_content')),
+                                                    actions: <Widget>[
+                                                      ElevatedButton(
+                                                        child: Semantics(
+                                                          label: AppLocalizations
+                                                  .of(context)
+                                                  .translate('close_btn'),
+                                                          child: Text(AppLocalizations
+                                                                  .of(context)
+                                                              .translate('close_btn')),
+                                                        ),
+                                                        onPressed: () {
+                                                          Navigator.of(context,
+                                                                  rootNavigator: true)
+                                                              .pop();
+                                                        },
+                                                      )
+                                                    ],
+                                                  ));
+                                        }
+                                        setState(() => isPressed = false);
+                                      },
+                                onLongPress: null,
                               ),
-                            ],
-                          ),
+                            ),
+                            Divider(
+                              thickness: 5.0,
+                              color: Colors.blueGrey,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Column(
+                                children: [
+                                  Semantics(
+                                    label: AppLocalizations.of(context)
+                                        .translate('location_here'),
+                                    child: Text(
+                                      AppLocalizations.of(context)
+                                          .translate('location_here'),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Color(0xFFff6e41)),
+                                    icon: Icon(Icons.add_location),
+                                    label: Text(AppLocalizations.of(context)
+                                        .translate('open_map')),
+                                    onPressed: _launchURL,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(10.0),
+                              child: Semantics(
+                                label: AppLocalizations.of(context)
+                                    .translate('an_logo_img'),
+                                child: Image.asset('assets/ACLogotr.png'),
+                              ),
+                            ),
+                          ],
                         ),
-                        Semantics(
-                          label: AppLocalizations.of(context)
-                              .translate('an_logo_img'),
-                          child: Container(
-                            padding: EdgeInsets.all(10.0),
-                            child: Image.asset('assets/ACLogotr.png'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                      );
+                    }),
+                  ),
+                ),
               ),
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -488,7 +614,7 @@ class _AskHelpState extends State<AskHelp> with AfterLayoutMixin<AskHelp> {
     String bookerLng = prefs.getString("bookerLng");
     // Geolocator package
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation);
+        desiredAccuracy: LocationAccuracy.high);
 
     if (Platform.isAndroid) {
       print("Device is android, open google maps");

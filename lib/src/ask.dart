@@ -56,9 +56,9 @@ void sendMedicalHelpRequest() async {
             "response.statusCode == 200\n"
             "+++++++++++++++++++++++++++");
     // try{
-    var data = response.body;
+    // var data = response.body;
     // json.decode(response.body);
-    print(data); //[code]
+    // print(data); // print result for debugging
     //  } on FormatException catch (e){
     // print(e);
      }
@@ -81,7 +81,8 @@ void sendMedicalHelpRequest() async {
     ..html = "Medical Help message sent at ${DateTime.now()} <br>"
         "From number: $countryCode$userPhone<br>"
         "Current location: <br>"
-        "<a href='$mapLink' target='_blank'/> Go to user location</a>";
+        "<a href='$mapLink' target='_blank'/> Go to user location</a><br>"
+        "Or click the link: '$mapLink'";
 
   try {
     final sendReport = await send(message, smtpServer);
@@ -120,7 +121,8 @@ void sendCarRelatedHelpRequest() async {
   final fullmessage = "Sender ($sender) has a car issue.\n"
             "Date-time at ${DateTime.now()}\n"
             "Location:\n"
-            "$mapLink";
+            "$mapLink\n"
+            "Or click the link: '$mapLink'";
 
 
   final response = await http.get(Uri.parse(
@@ -137,9 +139,9 @@ void sendCarRelatedHelpRequest() async {
             "response.statusCode == 200\n"
             "+++++++++++++++++++++++++++");
     // try{
-    var data = response.body;
+    // var data = response.body;
     // json.decode(response.body);
-    print(data); //[code]
+    // print(data); //[code]
     //  } on FormatException catch (e){
     // print(e);
   }
@@ -161,7 +163,8 @@ void sendCarRelatedHelpRequest() async {
     ..html = "Car related help message sent at ${DateTime.now()} <br>"
         "From number: $countryCode$userPhone<br>"
         "Current location: \n"
-        "<a href='$mapLink' target='_blank'/> Go to user location</a>";
+        "<a href='$mapLink' target='_blank'/> Go to user location</a><br>"
+        "Or click the link: '$mapLink'";
 
   try {
     final sendReport = await send(message, smtpServer);
@@ -215,9 +218,9 @@ void sendLostRequest() async {
             "response.statusCode == 200\n"
             "+++++++++++++++++++++++++++");
     // try{
-    var data = response.body;
+    // var data = response.body;
     // json.decode(response.body);
-    print(data); //[code]
+    // print(data); //[code]
     //  } on FormatException catch (e){
     // print(e);
   }
@@ -238,7 +241,8 @@ void sendLostRequest() async {
     ..html =
         "User phone number: $countryCode$userPhone sent message at ${DateTime.now()} that he get lost.<br>"
             "Current location:</br>"
-            "<a href='$mapLink' target='_blank'/> Go to user location</a>";
+            "<a href='$mapLink' target='_blank'/> Go to user location</a><br>"
+            "Or click the link: '$mapLink'";
 
   try {
     final sendReport = await send(message, smtpServer);

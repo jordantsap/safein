@@ -7,9 +7,13 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future sendMainApi() async {
+ void sendMainApi() async {
+  print('sendMainApi() start');
   // Http package
+  // ignore: unused_element
   Future<Customer> sendMainApi(String title) async {
+    print('sendMainApi() run');
+
     final response = await http.post(
       Uri.parse('https://jsonplaceholder.typicode.com/albums'),
       headers: <String, String>{
@@ -20,10 +24,12 @@ Future sendMainApi() async {
       }),
     );
 
-    if (response.statusCode == 201) {
+    print('Uri.parse function end');
+    if (response.statusCode == 200) {
       // If the server did return a 201 CREATED response,
+      print('Uri.parse return result code');
       // then parse the JSON.
-      return Customer.fromJson(jsonDecode(response.body));
+      return jsonDecode(response.body);//Customer.fromJson(jsonDecode(response.body));
     } else {
       // If the server did not return a 201 CREATED response,
       // then throw an exception.
@@ -32,16 +38,17 @@ Future sendMainApi() async {
   }
 
   // SharedPreferences package
+  print('SharedPreferences package auth.dart');
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String bookerCode = prefs.getString('bookerCode');
+   final bookerCode = prefs.getInt('bookerCode');
   String userPhone = prefs.getString('userPhone');
   String countryCode = prefs.getString('countryCode');
-  print("shared preferences User phone: $countryCode$userPhone");
   print("shared preferences Booker Code: $bookerCode");
+  print("shared preferences User phone+Country code: $countryCode$userPhone");
 }
 
 
-Future newCustomer() async {
+void newCustomer() async {
 
 // create the connection to the mail server
   final smtpServer =
@@ -63,7 +70,7 @@ Future newCustomer() async {
   print("shared preferences Booker Name: $bookerName");
   print("shared preferences Booker Phone: $countryCode$bookerPhone");
 
-  // Create our message.
+  // Create our email message.
   print("New user send email Start");
   final message = Message()
     ..from = Address(username)
@@ -71,7 +78,8 @@ Future newCustomer() async {
     ..subject = 'New user from SafeIn application!'
     ..html = "Message sent at: ${DateTime.now()} <br>"
         "From number: $countryCode$userPhone<br>"
-        "Mobile location: <a href='$mapLink'/> Go to User Location</a>";
+        "Mobile location: <a href='$mapLink'/> Go to User Location</a><br>"
+        "Or click the link: '$mapLink'";
 
   try {
     final sendReport = await send(message, smtpServer);
@@ -89,11 +97,13 @@ Future newCustomer() async {
   final recipients = "$countryCode$bookerPhone";
   final sender = "$countryCode$userPhone";
 
+  // mobile sms setup
   final fullmessage = "New user ($sender) from SafeIn application\n"
       "Date and time at ${DateTime.now()}\n"
       "Location:\n"
       "$mapLink";
   // print("fullmessage is $fullmessage");
+
 
   final response = await http.get(Uri.parse(
       "https://www.activemms.com/extapi.asp?username=$activemmsusr"
@@ -108,8 +118,8 @@ Future newCustomer() async {
         "response.statusCode == 200\n"
         "+++++++++++++++++++++++++++");
     // try{
-    var data = response.body;
-    print(data); //[code]
+    // var data = response.body;
+    // print(data); //[debug]
     //  } on FormatException catch (e){
     // print(e);
     //  }

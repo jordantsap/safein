@@ -1,5 +1,7 @@
 {
   "safein_title": "SafeIn",
+  "safein_empty_space": "Safein application empty space",
+  "safein_verification": "Safein safein_verification",
   "referencecode_text": "Please complete the code that you received from the accommodation service",
   "referencecode_btn": "Confirm code",
   "usage_notice": "Usage Notice",
@@ -11,10 +13,10 @@
   "verification_header": "Complete and send the details for verification",
   "notempty_val": "The field cannot be empty",
   "digit_val": "Ensure 10 digits phone, current: ",
-  "phone_val": "Please enter 10 digits phone",
-  "phone_label": "Complete your Phone Number below",
+  "phone_val": "Please enter 10 digits mobile phone",
+  "phone_label": "Complete mobile phone number here",
   "phone_hint": "10 digits: 6945856987",
-  "code_label": "Enter the code provided by the booker",
+  "code_label": "Enter the code provided by the hotelier",
   "submit": "Press the button to Send",
   "no_auth": "Verification failed, please check the given code, or try a different code.",
   "no_internet": "Check internet connectivity and try again.",
@@ -51,5 +53,6 @@
 
   "location_here": "View your Touristic Accommodation Location.",
   "open_map": "Click here to open Map",
-  "an_logo_img": "Logo image for Anathesis consulting company"
+  "an_logo_img": "Logo image for Anathesis consulting company",
+  "country_code_flag_sr": "Select your country code below"
 }
